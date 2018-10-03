@@ -1,0 +1,48 @@
+% VGG16
+\begin{tikzpicture}[start chain=going below, node distance=12pt,
+        point/.append style={on chain, join=by {signal}},
+        layer/.append style={on chain, join=by {signal}},
+    ]
+    \node[point] {Input Image};
+    \node[conv] {Conv 3x3, 64};
+    \node[activation] {ReLU};
+    \node[conv] {Conv 3x3, 64};
+    \node[activation] {ReLU};
+    \node[pool] {MaxPool 2x2/2};
+    \node[conv] {Conv 3x3, 64};
+    \node[activation] {ReLU};
+    \node[conv] {Conv 3x3, 64};
+    \node[activation] {ReLU};
+    \node[pool] {MaxPool 2x2/2};
+    \node[conv] {Conv 3x3, 256};
+    \node[activation] {ReLU};
+    \node[conv] {Conv 3x3, 256};
+    \node[activation] {ReLU};
+    \node[conv] {Conv 3x3, 256};
+    \node[activation] {ReLU};
+    \node[pool] {MaxPool 2x2/2};
+    \node[conv] {Conv 3x3, 512};
+    \node[activation] {ReLU};
+    \node[conv] {Conv 3x3, 512};
+    \node[activation] {ReLU};
+    \node[conv] {Conv 3x3, 512};
+    \node[activation] {ReLU};
+    \node[pool] {MaxPool 2x2/2};
+    \node[conv] {Conv 3x3, 512};
+    \node[activation] {ReLU};
+    \node[conv] {Conv 3x3, 512};
+    \node[activation] {ReLU};
+    \node[conv] {Conv 3x3, 512};
+    \node[activation] {ReLU};
+    \node[pool] {MaxPool 2x2/2};
+    \node[layer] {Flatten};
+    \node[fc] {FC 4096};
+    \node[activation] {ReLU};
+    \node[layer] {Dropout};
+    \node[fc] {FC 4096};
+    \node[activation] {ReLU};
+    \node[layer] {Dropout};
+    \node[fc] {FC 1000};
+    \node[softmax] {Softmax};
+    \node[point] {Classification Output};
+\end{tikzpicture}

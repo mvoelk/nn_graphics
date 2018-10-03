@@ -1,0 +1,146 @@
+% SSD
+\def\d{10pt}
+\def\branchy{70pt}
+
+\begin{tikzpicture}[]
+    {[start chain=main going below, node distance=12pt,
+        point/.append style={on chain, join=by {signal}},
+        layer/.append style={on chain, join=by {signal, to path={-- ++(0,-20pt) -| (\tikztotarget)}}},
+    ]
+    \node[point] (n) {Input Image};
+    \node[anchor=north west] at ($(n) +(\layerwidth/2+0pt, -6pt)$) {300x300x3};
+    \node[conv, node distance=16pt, on chain, join=by {signal}] {Conv 3x3, 64};  % conv_1_1, hack
+    \node[conv] {Conv 3x3, 64};  % conv_1_2
+    \node[pool] {MaxPool 2x2/2};
+    \node[conv] {Conv 3x3, 64};  % conv_2_1
+    \node[conv] {Conv 3x3, 64};  % conv_2_2
+    \node[pool] {MaxPool 2x2/2};
+    \node[conv] {Conv 3x3, 256}; % conv_3_1
+    \node[conv] {Conv 3x3, 256}; % conv_3_2
+    \node[conv] {Conv 3x3, 256}; % conv_3_3
+    \node[pool] {MaxPool 2x2/2};
+    \node[conv] {Conv 3x3, 512}; % conv_4_1
+    \node[conv] {Conv 3x3, 512}; % conv_4_2
+    \node[conv] (n) {Conv 3x3, 512}; % conv_4_3
+    \node[anchor=north west] at ($(n) +(\layerwidth/2+0pt, -6pt)$) {38x38x512};
+    
+    {[start branch=b1 going below]
+    \node[layer, xshift=\layerwidth*1.5, yshift=-16pt] {L2 Normalize};
+    {[start branch=b1c going below]
+        \node[conv, xshift=\layerwidth*4.5, yshift=-104pt] {Conv 3x3, 84};
+        \node[layer] {Flatten};
+    }
+    {[start branch=b1r going below]
+        \node[conv, xshift=\layerwidth*10.5, yshift=-104pt] {Conv 3x3, 16};
+        \node[layer] {Flatten};
+    }
+    }
+    
+    \node[pool, yshift=-16pt] {MaxPool 2x2/2};
+    \node[conv] {Conv 3x3, 512}; % conv_5_1
+    \node[conv] {Conv 3x3, 512}; % conv_5_2
+    \node[conv] {Conv 3x3, 512}; % conv_5_3
+    \node[pool] {MaxPool 2x2/2};
+    \node[conv] {Conv 3x3 1024}; % fc6
+    \node[conv] (n) {Conv 1x1 1024}; % fc7
+    \node[anchor=north west] at ($(n) +(\layerwidth/2+0pt, -6pt)$) {19x19x1024};
+    
+    {[start branch=b2c going below]
+        \node[conv, xshift=\layerwidth*5, yshift=-16pt] {Conv 3x3, 126};
+        \node[layer] {Flatten};
+    }
+    {[start branch=b2r going below]
+        \node[conv, xshift=\layerwidth*11, yshift=-16pt] {Conv 3x3, 24};
+        \node[layer] {Flatten};
+    }
+    
+    \node[conv, yshift=-16pt] {Conv 1x1, 256}; % conv_6_1
+    \node[conv] (n) {Conv 3x3, 512}; % conv_6_2
+    \node[anchor=north west] at ($(n) +(\layerwidth/2+0pt, -6pt)$) {10x10x512};
+    
+    {[start branch=b3c going below]
+        \node[conv, xshift=\layerwidth*4, yshift=-16pt] {Conv 3x3, 126};
+        \node[layer] {Flatten};
+    }
+    {[start branch=b3r going below]
+        \node[conv, xshift=\layerwidth*10, yshift=-16pt] {Conv 3x3, 24};
+        \node[layer] {Flatten};
+    }
+    
+    \node[conv, yshift=-16pt] {Conv 1x1, 128}; % conv_7_1
+    \node[conv] (n) {Conv 3x3, 256}; % conv_7_2
+    \node[anchor=north west] at ($(n) +(\layerwidth/2+0pt, -6pt)$) {5x5x256};
+    
+    {[start branch=b4c going below]
+        \node[conv, xshift=\layerwidth*3, yshift=-16pt] {Conv 3x3, 126};
+        \node[layer] {Flatten};
+    }
+    {[start branch=b4r going below]
+        \node[conv, xshift=\layerwidth*9, yshift=-16pt] {Conv 3x3, 24};
+        \node[layer] {Flatten};
+    }
+    
+    \node[conv, yshift=-16pt] {Conv 1x1, 128}; % conv_8_1
+    \node[conv] (n) {Conv 3x3, 256}; % conv_8_2
+    \node[anchor=north west] at ($(n) +(\layerwidth/2+0pt, -6pt)$) {3x3x256};
+    
+    {[start branch=b5c going below]
+        \node[conv, xshift=\layerwidth*2, yshift=-16pt] {Conv 3x3, 84};
+        \node[layer] {Flatten};
+    }
+    {[start branch=b5r going below]
+        \node[conv, xshift=\layerwidth*8, yshift=-16pt] {Conv 3x3, 16};
+        \node[layer] {Flatten};
+    }
+    
+    \node[conv, yshift=-16pt] {Conv 1x1, 128}; % conv_9_1
+    \node[conv] (n) {Conv 3x3, 256}; % conv_9_2
+    \node[anchor=north west] at ($(n) +(\layerwidth/2+0pt, -6pt)$) {1x1x256};
+    
+    {[start branch=b6c going below]
+        \node[conv, xshift=\layerwidth*1, yshift=-16pt] {Conv 3x3, 84};
+        \node[layer] {Flatten};
+    }
+    {[start branch=b6r going below]
+        \node[conv, xshift=\layerwidth*7, yshift=-16pt] {Conv 3x3, 16};
+        \node[layer] {Flatten};
+    }
+    }
+    
+    {[start chain=going below, node distance=12pt,
+            point/.append style={on chain, join=by {signal}},
+            layer/.append style={on chain, join=by {signal}},
+            branch/.append style={on chain, join=by {signal, -}},
+        ]
+    \node[layer, xshift=\layerwidth*2.5, yshift=-\branchy*2,
+            below of=main/b6c-end,
+            join=with main/b1/b1c-end by {signal, to path={|- ($(\tikztotarget) +(\d*2.5,\d*2)$) -- ($(\tikztotarget.north) +(\d*2.5,0pt)$)}},
+            join=with main/b2c-end by {signal, to path={|- ($(\tikztotarget) +(\d*1.5,\d*3)$) -- ($(\tikztotarget.north) +(\d*1.5,0pt)$)}},
+            join=with main/b3c-end by {signal, to path={|- ($(\tikztotarget) +(\d*0.5,\d*4)$) -- ($(\tikztotarget.north) +(\d*0.5,0pt)$)}},
+            join=with main/b4c-end by {signal, to path={|- ($(\tikztotarget) +(-\d*0.5,\d*4)$) -- ($(\tikztotarget.north) +(-\d*0.5,0pt)$)}},
+            join=with main/b5c-end by {signal, to path={|- ($(\tikztotarget) +(-\d*1.5,\d*3)$) -- ($(\tikztotarget.north) +(-\d*1.5,0pt)$)}},
+            join=with main/b6c-end by {signal, to path={|- ($(\tikztotarget) +(-\d*2.5,\d*2)$) -- ($(\tikztotarget.north) +(-\d*2.5,0pt)$)}},
+        ] {Concatenate};
+        \node[layer] {Reshape};
+        \node[softmax] {Softmax};
+        \node[point] {Classification};
+    }
+    
+    {[start chain=going below, node distance=12pt,
+            point/.append style={on chain, join=by {signal}},
+            layer/.append style={on chain, join=by {signal}},
+            branch/.append style={on chain, join=by {signal, -}},
+        ]
+    \node[layer, xshift=\layerwidth*2.5, yshift=-\branchy*2,
+            below of=main/b6r-end,
+            join=with main/b1/b1r-end by {signal, to path={|- ($(\tikztotarget) +(\d*2.5,\d*2)$) -- ($(\tikztotarget.north) +(\d*2.5,0pt)$)}},
+            join=with main/b2r-end by {signal, to path={|- ($(\tikztotarget) +(\d*1.5,\d*3)$) -- ($(\tikztotarget.north) +(\d*1.5,0pt)$)}},
+            join=with main/b3r-end by {signal, to path={|- ($(\tikztotarget) +(\d*0.5,\d*4)$) -- ($(\tikztotarget.north) +(\d*0.5,0pt)$)}},
+            join=with main/b4r-end by {signal, to path={|- ($(\tikztotarget) +(-\d*0.5,\d*4)$) -- ($(\tikztotarget.north) +(-\d*0.5,0pt)$)}},
+            join=with main/b5r-end by {signal, to path={|- ($(\tikztotarget) +(-\d*1.5,\d*3)$) -- ($(\tikztotarget.north) +(-\d*1.5,0pt)$)}},
+            join=with main/b6r-end by {signal, to path={|- ($(\tikztotarget) +(-\d*2.5,\d*2)$) -- ($(\tikztotarget.north) +(-\d*2.5,0pt)$)}},
+        ] {Concatenate};
+        \node[layer] {Reshape};
+        \node[point, on chain, join=by {signal}] {BBox Regression};
+    }
+\end{tikzpicture}

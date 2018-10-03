@@ -1,0 +1,32 @@
+% unfolding
+\begin{tikzpicture}
+    \def\nodedist{64pt}
+    
+    \newcommand{\timestep}[2]{
+        \node[block, fill=snowymint, rounded corners, minimum width=40pt, minimum height=24pt] (a#2) at #1 {A};
+        \node[inputnode, below=26pt of a#2] (x#2) {$x_#2$};
+        \node[outputnode, above=26pt of a#2] (h#2) {$h_#2$};
+        \draw[signal] (x#2) -- (a#2);
+        \draw[signal] (a#2) -- (h#2);
+    }
+    
+    \timestep{(0, 0)}{t};
+    \coordinate (0t) at ($(ht)!0.6!(at)$);
+    \draw[signal, -, shorten >=\intergape] (at) -- +(40pt,0pt) |- (0t);
+    \draw[signal, latex-, shorten >=\intergape] (at) -- +(-40pt,0pt) |- (0t);
+    
+    \node[] (e) at ($(at) +(\nodedist,0)$) {\LARGE=};
+    
+    \timestep{($(e) +(0.7*\nodedist,0)$)}{0};
+    \timestep{($(a0) +(\nodedist,0)$)}{1};
+    \draw[signal] (a0) -- (a1);
+    \timestep{($(a1) +(\nodedist,0)$)}{2};
+    \draw[signal] (a1) -- (a2);
+    \timestep{($(a2) +(\nodedist,0)$)}{3};
+    \draw[signal] (a2) -- (a3);
+    
+    \node[] at ($(a3) +(0.6*\nodedist,0)$) (ddd) {$\dots$};
+    \timestep{($(ddd) +(0.7*\nodedist,0)$)}{t};
+    \draw[signal, -] (a3) -- (ddd);
+    \draw[signal] (ddd) -- (at);
+\end{tikzpicture}

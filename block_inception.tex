@@ -1,0 +1,36 @@
+% Inception Block
+
+\begin{tikzpicture}[start chain=main going below, node distance=12pt,
+        point/.append style={on chain, join=by {signal}},
+        layer/.append style={on chain, join=by {signal}},
+        branch/.append style={on chain, join=by {signal, -}},
+    ]
+    \def\branchy{70pt}
+    
+    \node[point] {Input};
+    \node[branch] {};
+    {[start branch=b1 going below]
+        \node[conv, xshift=-\layerwidth*1.5-24pt, yshift=-\branchy-26pt] {Conv 1x1};
+        \node[activation] {ReLU};
+    }
+    {[start branch=b2 going below]
+        \node[conv, xshift=-\layerwidth*0.5-8pt, yshift=-\branchy] {Conv 1x1};
+        \node[activation] {ReLU};
+        \node[conv] {Conv 3x3};
+        \node[activation] {ReLU};
+    }
+    {[start branch=b3 going below]
+        \node[conv, xshift=\layerwidth*0.5+8pt, yshift=-\branchy] {Conv 1x1};
+        \node[activation] {ReLU};
+        \node[conv] (foo) {Conv 5x5};
+        \node[activation] {ReLU};
+    }
+    \node[pool, xshift=\layerwidth*1.5+24pt, yshift=-\branchy-13pt] {MaxPool 3x3};
+    \node[conv] {Conv 1x1};
+    \node[activation] {ReLU};
+    \node[layer, xshift=-\layerwidth*1.5-24pt, yshift=-\branchy,
+        join=with main/b1-end by signal,
+        join=with main/b2-end by signal, 
+        join=with main/b3-end by signal] {Concatenation};
+    \node[point] {Output};
+\end{tikzpicture}

@@ -1,0 +1,9 @@
+% precision
+
+\begin{tikzpicture}
+    \def\radius{0.5}
+    \fill[tp] (0,2*\radius+0.2) arc (90:270:\radius);
+    \fill[tp] (0,-0.2) arc (90:270:\radius);
+    \fill[fp] (0,-2*\radius-0.2) arc (270:450:\radius);
+    \draw[signal, -] (-1.5*\radius, 0) -- (1.5*\radius,0);
+\end{tikzpicture}

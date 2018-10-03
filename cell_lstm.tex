@@ -1,0 +1,67 @@
+% LSTM
+\begin{tikzpicture}[thick, node distance=30pt and 30pt, on grid]
+    \node[cell, minimum width=200pt, minimum height=110pt, anchor=north west] (b) at (-2pt,0pt) {};
+    
+    \coordinate (cin) at (0pt,-20pt);
+    \draw[signal] (cin) +(-\iolen, 0pt) node[above] {$c_{t-1}$} -- (cin);
+    \coordinate (cout) at (200pt,-20pt);
+    \draw[signal] (cout) -- +(\iolen,0pt) node[above left] {$c_{t}$};
+    \coordinate (hin) at (0pt,-100pt);
+    \draw[signal] (hin) +(-\iolen, 0pt) node[above] {$h_{t-1}$} -- (hin);
+    \coordinate (hout) at (200pt,-100pt);
+    \draw[signal] (hout) -- +(\iolen,0pt) node[above left] {$h_{t}$};
+    \coordinate (h) at (184pt,0pt);
+    \draw[signal] (h) -- +(0,\iolen) node[left] {$h_{t}$};
+    \coordinate (x) at (14pt,-110pt);
+    \draw[signal, -] (x) +(0pt,-\iolen) node[left] {$x_{t}$} -- (x);
+    
+    \node[celllayer] (f) at (32pt,-80pt) {$\sigm$};
+    \node[celllayer, right=34pt of f] (i) {$\sigm$};
+    \node[celllayer, right=34pt of i] (c) {$\tanh$};
+    \node[celllayer, right=34pt of c] (o) {$\sigm$};
+    
+    \node[pointwise, above=60pt of f] (fm) {$\times$};
+    
+    \node[pointwise, above=30pt of c] (cm) {$\times$};
+    \node[pointwise, above=30pt of cm] (cmp) {$+$};
+    
+    \node[pointwise, above right=20pt and 20 pt of o] (om) {$\times$};
+    \node[pointwise, above=20pt of om] (omt) {$\tanh$};
+    
+    \draw[signal] (f) edge node[near start,left] {$f_t$} (fm);
+    
+    \draw[signal, -] (c) edge node[pos=0.5,left] {$\tilde{c}_t$} (cm); 
+    \draw[signal] (cm) to (cmp);
+    \draw[signal] (i) |- (cm) node[near start,left] {$i_t$};
+    
+    \draw[signal] (o) |- (om) node[pos=0.3,left] {$o_t$};
+    
+    \draw[signal, -] (fm) -- (cmp);
+    
+    \draw[signal, -] (cmp) -| (omt);
+    \draw[signal, -] (omt) -- (om);
+    
+    \draw[signal] (cin) +(-\iolen, 0) node[above] {$c_{t-1}$} -- +(0,0);
+    
+    \draw[signal, -] (cin) +(-10pt,0) -- (fm);
+    
+    \draw[signal] (hin) +(-\iolen, 0) node[above] {$h_{t-1}$} -- +(0,0);
+    
+    \draw[signal, -] (hin) +(-10pt,0) -| (o);
+    \draw[signal, -] (hin) -| (c);
+    \draw[signal, -] (hin) -| (i);
+    \draw[signal, -] (hin) -| (f);
+    
+    \draw[signal] (cout) -- +(\iolen,0) node[above left] {$c_{t}$};
+    
+    \draw[signal, -] (cmp) -- (cout);
+    
+    \draw[signal] (hout) -- +(\iolen,0) node[above left] {$h_{t}$};
+        
+    \draw[signal, -] (om) |- (hout);
+    
+    \draw[signal, -, shorten >=\intergape] (h |- hout) +(-10pt,0) -| (h |- cout);
+    \draw[signal, shorten <=\intergape] (h |- cout) -- +(0,\iolen+20pt) node[left] {$h_{t}$};
+    
+    \draw[signal, -] (x) |- (f |- hin);
+\end{tikzpicture}

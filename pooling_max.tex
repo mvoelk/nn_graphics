@@ -1,0 +1,38 @@
+% max pooling, kernel (2,2), stride (2,2)
+\begin{tikzpicture}
+    \coordinate (p) at (0,0);
+    \draw[shift={(p)}, fill=red!20!white] (0,0) rectangle (2,-2);
+    \draw[shift={(p)}, fill=yellow!20!white] (2,0) rectangle (4,-2);
+    \draw[shift={(p)}, fill=blue!20!white] (0,-2) rectangle (2,-4);
+    \draw[shift={(p)}, fill=green!20!white] (2,-2) rectangle (4,-4);
+    \draw[
+        ultra thick,
+        step=1, 
+        color=black,
+        draw=black,
+        fill=black!20!white,
+        shift={(p)}
+    ] (0,0) grid (4,-4)
+    foreach[count=~] \l in {73, 74, 17, 49, 10, 29, 41, 20, 4, 23, 39, 4, 50, 80, 56, 57} {
+        ({0.5+mod(~-1,4}, {-0.5-div(~-1,4}) node {\Large \l}
+    };
+    
+    \draw[signal] (4.5,-2) -> (5.5, -2);
+    
+    \coordinate (p) at (6,-1);
+    \draw[shift={(p)}, fill=red!20!white] (0,0) rectangle (1,-1);
+    \draw[shift={(p)}, fill=yellow!20!white] (1,0) rectangle (2,-1);
+    \draw[shift={(p)}, fill=blue!20!white] (0,-1) rectangle (1,-2);
+    \draw[shift={(p)}, fill=green!20!white] (1,-1) rectangle (2,-2);
+    \draw[
+        ultra thick,
+        step=1, 
+        color=black,
+        draw=black,
+        fill=black!20!white,
+        shift={(p)}
+    ] (0,0) grid (2,-2)
+    foreach[count=~] \l in {74, 49, 80, 57} {
+        ({0.5+mod(~-1,2}, {-0.5-div(~-1,2}) node {\Large \l}
+    };
+\end{tikzpicture}

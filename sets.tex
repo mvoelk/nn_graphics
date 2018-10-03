@@ -1,0 +1,40 @@
+% TP, FP, FN, TN sets
+
+\begin{tikzpicture}
+    %\def\radius{3}
+    \def\radius{80pt}
+    \def\d{8pt}
+    
+    \tikzstyle{annot} = [text width=4em, text centered]
+    
+    \fill[fn] (0,-1.5*\radius) rectangle (-1.5*\radius,1.5*\radius);
+    \fill[tn] (0,-1.5*\radius) rectangle (1.5*\radius,1.5*\radius);
+    \draw (-1.5*\radius,1.5*\radius) rectangle (1.5*\radius,-1.5*\radius);
+    
+    \fill[tp] (0,+\radius) arc (90:270:\radius);
+    \fill[fp] (0,-\radius) arc (270:450:\radius);
+    
+    \draw (0,0) circle (\radius);
+    \coordinate[pin={[pin edge={latex-, black}, pin distance=0.8*\radius]-25:Detections}] (B) at (-25:\radius);
+    
+    \node[annot, text width=100pt, align=center] at (-0.5*\radius,0) {True Positives};
+    \node[annot, text width=100pt, align=center] at (0.5*\radius,0) {False Positives};
+    
+    \node[annot, text width=100pt, align=center] at (-0.75*\radius,1.5*\radius-\d*2) {False Negatives};
+    \node[annot, text width=100pt, align=center] at (0.75*\radius,1.5*\radius-\d*2) {Ture Negatives};
+    
+    \node[annot, text width=100pt, align=center] at (-0.75*\radius,1.5*\radius+\d*2) {Text Instances};
+    \node[annot, text width=100pt, align=center] at (0.75*\radius,1.5*\radius+\d*2) {Background};
+    
+    \coordinate (p) at (-1.5*\radius+\d/4,1.5*\radius+\d/4);
+    \draw[shift={(p)}] (0,0) -- (0,\d) -- (1.5*\radius-\d,\d) -- (1.5*\radius-\d,0);
+
+    \coordinate (p) at (\d/4,1.5*\radius+\d/4);
+    \draw[shift={(p)}] (0,0) -- (0,\d) -- (1.5*\radius-\d,\d) -- (1.5*\radius-\d,0);
+    
+    \pgfmathsetseed{10}
+    \foreach \x in {1,2,...,20}{
+        \draw[fill=black!50!white] ({(-1.5*\radius+\d/2)*rnd},{-1.5*\radius+(3.0*\radius-\d*3)*rnd}) circle (0.08);
+        \draw ({(1.5*\radius-\d/2)*rnd},{-1.5*\radius+(3.0*\radius-\d*3)*rnd}) circle (0.08);
+        };
+\end{tikzpicture}

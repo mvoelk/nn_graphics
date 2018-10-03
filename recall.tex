@@ -1,0 +1,9 @@
+% recall
+
+\begin{tikzpicture}
+    \def\radius{0.5}
+    \fill[fn] (0,-0.2) rectangle (-1.5*\radius,-3.0*\radius-0.2);
+    \fill[tp] (0,2*\radius+0.2) arc (90:270:\radius);
+    \fill[tp] (0,-0.5*\radius-0.2) arc (90:270:\radius);
+    \draw[signal, -] (-1.5*\radius, 0) -- (1.5*\radius,0);
+\end{tikzpicture}

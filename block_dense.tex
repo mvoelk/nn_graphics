@@ -1,0 +1,31 @@
+% Dense Block
+
+\begin{tikzpicture}[thick, node distance=\vlayerheight, on grid]
+    
+    \coordinate (labelcoord) at (\vlayerwidth/2-2pt, 6pt);
+    
+    \coordinate (n0) at (0,0);
+    \coordinate (n1) at ($(n0) +(0pt, -4pt)$);
+    \node[anchor=north west] at ($(n1) +(-2pt, 6pt)$) {\tiny wxhxc};
+    
+    \foreach \y in {1,...,8} {
+        \begin{scope} [start chain=going below, every node/.style={on chain}]
+            \node[bn, vlayer] (n3) at ($(n1) +(0.8*\vlayerwidth, -20pt)$) {};
+            \node[activation, vlayer] {};
+            \node[conv, vlayer] (n4) {};
+            \node[bn, vlayer] {};
+            \node[activation, vlayer] {};
+            \node[conv, vlayer] (n2) {};
+        \end{scope}
+        
+        \node[anchor=north west] at ($(n4) +(labelcoord)$) {\tiny 1,1,4k};
+        \node[anchor=north west] at ($(n2) +(labelcoord)$) {\tiny 3,1,k};
+        \draw[signal] (n1) |- +(8pt, -8pt) -| (n3);
+        \coordinate (n1) at ($(n2) +(-0.8*\vlayerwidth, -16pt)$);
+        \draw[signal, -] (n2) |- +(-8pt, -8pt) -| (n1);
+        \node[anchor=north west] at ($(n1) +(-2pt, 6pt)$) {\tiny wxhx(c+\y k)};
+    }
+    
+    \draw[signal] (n0) -- ($(n1) +(0pt, -12pt)$);
+    
+\end{tikzpicture}

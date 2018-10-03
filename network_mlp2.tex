@@ -1,0 +1,42 @@
+% MLP 2 hidden layers
+\begin{tikzpicture}[]
+    \def\nodedist{35pt}
+    \def\layerdist{80pt}
+    \def\pindist{20pt}
+    
+    \tikzstyle{every pin edge}=[signal]
+    \tikzstyle{annot} = [text width=4em, text centered]
+    
+    \foreach \y in {1,...,3}
+        \node[inputnode, pin={[pin edge={latex-}, pin distance=\pindist]left:Input \y}] 
+            (I\y) at (0,-\y*\nodedist) {$x_\y$};  
+
+    \foreach \y in {1,...,4}
+        \node[hiddennode] 
+            (H1\y) at ($(\layerdist,-\y*\nodedist) +(0, 0.5*\nodedist)$) {$z_\y^1$};
+    
+    \foreach \y in {1,...,4}
+        \node[hiddennode] 
+            (H2\y) at ($(2*\layerdist,-\y*\nodedist) +(0, 0.5*\nodedist)$) {$z_\y^2$};
+    
+    \foreach \y in {1,...,2}
+        \node[outputnode, pin={[pin edge={-latex}, pin distance=\pindist]right:Output \y}]
+            (O\y) at ($(H21) + (\layerdist, -\y*\nodedist)$) {$y_\y$};
+
+    \foreach \dest in {1,...,4}
+        \foreach \source in {1,...,3}
+            \draw[signal] (I\source) -- (H1\dest);
+    
+    \foreach \dest in {1,...,4}
+        \foreach \source in {1,...,4}
+            \draw[signal] (H1\source) -- (H2\dest);
+    
+    \foreach \dest in {1,...,2}
+        \foreach \source in {1,...,4}
+            \draw[signal] (H2\source) edge (O\dest);
+
+    \node[annot, above=4pt of H11] (hl) {Hidden layer 1};
+    \node[annot, above=4pt of H21] (hl) {Hidden layer 2};
+    \node[annot] at (I1 |- hl) {Input layer};
+    \node[annot] at (O1 |- hl) {Output layer};
+\end{tikzpicture}

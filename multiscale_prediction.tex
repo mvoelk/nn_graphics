@@ -1,0 +1,41 @@
+% Multi Scale Prediction
+
+\begin{tikzpicture}
+    \def\d{10pt}
+    \def\hblockheight{40pt}
+    
+    \tikzstyle{hblock}=[style=block, draw=black, fill=black!20!white, minimum height=\hblockheight, text width=3cm, align=center]
+    \tikzstyle{hblockdist}=[node distance=\hblockheight+20pt]
+    
+    \begin{scope} [start chain=going right, 
+        every node/.style={on chain, join=by {signal}, hblockdist}]
+        \node[point] (b1) {Input};
+        \node[hblock] (s1) {Convolutional Feature Extractor};
+        \node[hblock] (s2) {Convolution and Downsampling};
+        \node[hblock] (s3) {Convolution and Downsampling};
+        \node[] (b1) {...};
+        \node[hblock] (sn) {Convolution and Downsampling};
+        \node[hblock] (pn) {Convolutional Predictor};
+    \end{scope}
+    
+    \node[above of=pn, hblockdist] 
+        (pd) {...};
+    \node[hblock, above of=pd, hblockdist] 
+        (p3) {Convolutional Predictor};
+    \node[hblock, above of=p3, hblockdist] 
+        (p2) {Convolutional Predictor};
+    \node[hblock, above of=p2, hblockdist] 
+        (p1) {Convolutional Predictor};
+        
+    \node[point, right of=pn, node distance=\hblockheight+90pt]
+        (b1) {Output};
+    
+    \draw[signal] (s1.east) -| +(\d,\d) |- (p1);
+    \draw[signal] (s2.east) -| +(\d,\d) |- (p2);
+    \draw[signal] (s3.east) -| +(\d,\d) |- (p3);
+    
+    \draw[signal] (p1.east) -| +(3*\d,-\d) |- (b1);
+    \draw[signal] (p2.east) -| +(2*\d,-\d) |- (b1);
+    \draw[signal] (p3.east) -| +(1*\d,-\d) |- (b1);
+    \draw[signal] (pn.east) -- (b1);
+\end{tikzpicture}

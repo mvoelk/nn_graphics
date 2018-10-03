@@ -1,0 +1,20 @@
+% RNN legend, horizontal
+\begin{tikzpicture}
+    \def\nodedist{170pt}
+
+    \node[celllayer, minimum width=40pt] (l) at (0pt,0pt) {};
+    \node[anchor=west] at ($(l) +(30pt, 0pt)$) {Network Layer}; % trainable
+    \node[pointwise] (p) at ($(l) +(\nodedist, 0pt)$) {};
+    \node[anchor=west] at ($(p) +(16pt, 0pt)$) {Pointwise Operation};
+    \coordinate (v) at ($(p) +(\nodedist, 0pt)$);
+    \draw[signal] (v) +(-20pt,0pt) -- +(20pt, 0pt);
+    \node[anchor=west] at ($(v) +(30pt, 0pt)$) {Vector Transfer};
+    \coordinate (m) at ($(v) +(\nodedist, 0pt)$);
+    \draw[signal] (m) +(-10pt,10pt) |- +(10pt, 0pt);
+    \draw[signal] (m) +(-10pt,-10pt) |- +(10pt, 0pt);
+    \node[anchor=west] at ($(m) +(20pt, 0pt)$) {Concatenate};
+    \coordinate (c) at ($(m) +(\nodedist, 0pt)$);
+    \draw[signal] (c) +(-10pt,0pt) -| +(10pt, 12pt);
+    \draw[signal] (c) +(-10pt,0pt) -| +(10pt, -12pt);
+    \node[anchor=west] at ($(c) +(20pt, 0pt)$) {Copy};
+\end{tikzpicture}

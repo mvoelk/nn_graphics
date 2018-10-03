@@ -1,0 +1,21 @@
+% RNN legend
+\begin{tikzpicture}
+	\def\labeldist{30pt}
+	\def\nodedist{60pt}
+
+	\node[celllayer, minimum width=40pt] (l) at (0pt,0pt) {};
+	\node[align=center] at ($(l) +(0pt,-\labeldist)$) {Network\\Layer}; % trainable
+	\node[pointwise] (p) at ($(l) +(\nodedist, 0pt)$) {};
+	\node[align=center] at ($(p) +(0pt,-\labeldist)$) {Pointwise\\Operation};
+	\coordinate (v) at ($(p) +(\nodedist, 0pt)$);
+	\draw[signal] (v) +(-20pt,0pt) -- +(20pt, 0pt);
+	\node[align=center] at ($(v) +(0pt,-\labeldist)$) {Vector\\Transfer};
+	\coordinate (m) at ($(v) +(\nodedist, 0pt)$);
+	\draw[signal] (m) +(-10pt,10pt) |- +(10pt, 0pt);
+	\draw[signal] (m) +(-10pt,-10pt) |- +(10pt, 0pt);
+	\node[align=center] at ($(m) +(0pt,-\labeldist)$) {Concatenate};
+	\coordinate (c) at ($(m) +(\nodedist, 0pt)$);
+	\draw[signal] (c) +(-10pt,0pt) -| +(10pt, 12pt);
+	\draw[signal] (c) +(-10pt,0pt) -| +(10pt, -12pt);
+	\node[align=center] at ($(c) +(0pt,-\labeldist)$) {Copy};
+\end{tikzpicture}

@@ -1,0 +1,50 @@
+% GRU
+\begin{tikzpicture}[thick, node distance=30pt and 30pt, on grid]
+    \node[cell, minimum width=200pt, minimum height=110pt, anchor=north west] (b) at (-2pt,0pt) {};
+    
+    \coordinate (hin) at (0pt,-20pt);
+    \draw[signal] (hin) +(-\iolen, 0pt) node[above] {$h_{t-1}$} -- (hin);
+    \coordinate (hout) at (200pt,-20pt);
+    \draw[signal] (hout) -- +(\iolen,0pt) node[above left] {$h_{t}$};
+    \coordinate (h) at (184pt,0pt);
+    \draw[signal] (h) -- +(0,\iolen) node[left] {$h_{t}$};
+    \coordinate (x) at (14pt,-110pt);
+    \draw[signal, -] (x) +(0pt,-\iolen) node[left] {$x_{t}$} -- (x);
+    
+    \node[celllayer] (r) at (68pt,-80pt) {$\sigm$};
+    \node[celllayer, right=58pt of r] (z) {$\sigm$};
+    \node[celllayer, right=34pt of z] (ht) {$\tanh$};
+    
+    \node[pointwise, above=30pt of ht] (htm) {$\times$};
+    \draw[signal] (ht) edge node[pos=0.5,left] {$\tilde{h}_t$} (htm);
+    \node[pointwise, above=30pt of htm] (htmp) {$+$};
+    \draw[signal] (htm) -- (htmp);
+    \draw[signal, -] (htmp) -- (hout);
+    
+    \node[pointwise, above left=30pt and 30pt of z] (z1) {$-1$};
+    \draw[signal] (z) |- (z1) node[pos=0.2,left] {$z_t$};
+    \node[pointwise, above=30pt of z1] (z1m) {$\times$};
+    \draw[signal] (z1) -- (z1m);
+    \draw[signal, -] (z1m) -- (htmp);
+    \draw[signal] (z) |- (htm);
+    \draw[signal, -] (hout -| h) +(-10pt,0pt) -| (h);
+    
+    \draw[signal, -] (hin) +(-10pt,0pt) -- (z1m);
+    
+    \node[pointwise, above left=30pt and 30pt of r] (rm) {$\times$};
+    \draw[signal] (r) |- (rm) node[pos=0.2,left] {$r_t$};
+    \draw[signal] (hin -| rm) +(-10pt,0pt) -| (rm);
+    
+    \coordinate (hx) at (60pt,-94pt);
+    \draw[signal, -] (x) |- (hx);
+    \draw[signal, -] (hin) +(-10pt,0pt) -| (x |- r) |- (hx) +(10pt,0pt);
+    \draw[signal, -] (hx) -| (r);
+    \draw[signal, -] (hx) -| (z);
+    
+    \coordinate (rx) at (60pt,-102pt);
+    \draw[signal, -] (x) |- (rx);
+    \draw[signal, -] (rx) -| (ht);
+    
+    \draw[signal, -, shorten >=\intergape] (rm) |- (rm |- hx);
+    \draw[signal, -, shorten <=\intergape] (rm |- hx) |- (z |- rx);
+\end{tikzpicture}

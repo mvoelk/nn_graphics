@@ -1,0 +1,321 @@
+% SegLink with Dense Blocks
+
+\begin{tikzpicture}[thick, node distance=\vlayerheight, on grid]
+    
+    \tikzstyle{vblocklink}=[node distance=(\vblockheight+\vlayerheight)/2+10pt, on chain, join=by {signal}]
+    
+    \pgfmathsetlengthmacro\d{\vlayerheight/2+6pt}
+    
+    \coordinate (labelcoord) at (\vlayerwidth/2-2pt, 6pt);
+    %\coordinate (shapecoord) at (2*\vlayerwidth-20pt, +2pt);
+    \coordinate (shapecoord) at (2*\vlayerwidth-22pt, -\d+10pt);
+    
+    \begin{scope} [start chain=going below, every node/.style={on chain}]
+        \node[point] (a1) {Input Image};
+        \node[conv, vlayer, node distance=26pt, on chain, join=by {signal}] (c1) {};
+        \node[bn, vlayer] {};
+        \node[activation, vlayer] {};
+        \node[conv, vlayer] (c2) {};
+        \node[bn, vlayer] {};
+        \node[activation, vlayer] {};
+        \node[conv, vlayer] (c3) {};
+        \node[bn, vlayer] {};
+        \node[activation, vlayer] {};
+        \node[pool, vlayer] (p1) {};
+        \node[layer, vblock, vblocklink] (d1) {Dense\\6 48};
+        \node[bn, vlayer, vblocklink] {};
+        \node[activation, vlayer] {};
+        \node[conv, vlayer] (c4) {};
+        \node[pool, vlayer] (p2) {};
+        \node[layer, vblock, vblocklink] (d2) {Dense\\8 48};
+        \node[bn, vlayer, vblocklink] {};
+        \node[activation, vlayer] {};
+        \node[conv, vlayer] (S1) {};
+    \end{scope}
+    
+    \node[anchor=north west] at ($(a1) +(shapecoord)$) {\tiny 512x512x3};
+    \node[anchor=north west] at ($(c1) +(labelcoord)$) {\tiny 3,2,64};
+    \node[anchor=north west] at ($(c2) +(labelcoord)$) {\tiny 3,1,64};
+    \node[anchor=north west] at ($(c3) +(labelcoord)$) {\tiny 3,1,128};
+    \node[anchor=north west] at ($(c4) +(labelcoord)$) {\tiny 1,1,416};
+    \node[anchor=north west] at ($(S1) +(labelcoord)$) {\tiny 1,1,800};
+    \node[anchor=north west] at ($(p1) +(labelcoord)$) {\tiny 2,2};
+    \node[anchor=north west] at ($(p2) +(labelcoord) +(0pt, -2pt)$) {\tiny 2,2};
+    
+    \begin{scope} [start chain=going below, every node/.style={on chain}]
+        \node[pool, vlayer] (n2) at ($(S1) +(0pt, -\vlayerheight-18pt)$) {};
+        \node[layer, vblock, 
+              node distance=(\vblockheight+\vlayerheight)/2+18pt, on chain, join=by {signal}
+        ] {Dense\\8 48};
+        \node[conv, vlayer, vblocklink] (c6) {};
+        \node[bn, vlayer] {};
+        \node[activation, vlayer] {};
+        \node[layer, vblock, vblocklink] {Dense\\8 48};
+        \node[conv, vlayer, vblocklink] (n6) {};
+        \node[bn, vlayer] {};
+        \node[activation, vlayer] (n3) {};
+    \end{scope}
+    
+    \begin{scope} [start chain=going below, every node/.style={on chain}]
+        \node[conv, vlayer] (n4) at ($(n6) +(-2*\vlayerwidth, 0pt)$) {};
+        \node[bn, vlayer] {};
+        \node[activation, vlayer] (n5) {};
+    \end{scope}
+    
+    \node[anchor=north west] at ($(c6) +(labelcoord)$) {\tiny 1,1,1148};
+    \node[anchor=north west] at ($(n6) +(labelcoord)$) {\tiny 1,1,256};
+    \node[anchor=north west] at ($(n4) +(labelcoord)$) {\tiny 1,1,256};
+    \node[anchor=north west] at ($(n2) +(labelcoord)$) {\tiny 2,2};
+    
+    \coordinate (n11) at ($(n3) +(0pt, -2*\d-12pt)$);
+    \coordinate (S2) at (n11);
+    
+    \draw[signal] (S1) -- (n2);
+    \draw[signal, -] (n3) -- (n11);
+    \draw[signal, -] (n5) |- +(+\d,-\d) -| (n11);
+    \draw[signal] (n2) |- +(-\d, -\d) -| (n4);
+    
+    \def\filters{{256,128,128,128,128}}
+    
+    \foreach \y in {3,...,7} {
+        \begin{scope} [start chain=going below, every node/.style={on chain}]
+            \node[bn, vlayer] (n7) at ($(n11) +(0pt, -0.5*\vlayerheight-22pt)$) {};
+            \node[activation, vlayer] {};
+            \node[conv, vlayer] (c7) {};
+            \node[bn, vlayer] {};
+            \node[activation, vlayer] {};
+            \node[conv, vlayer] (n8) {};
+        \end{scope}
+        
+        \begin{scope} [start chain=going below, every node/.style={on chain}]
+            \node[pool, vlayer] (n9) at ($(n11) +(-2*\vlayerwidth, -2.5*\vlayerheight-22pt)$) {};
+            \node[bn, vlayer] {};
+            \node[activation, vlayer] {};
+            \node[conv, vlayer] (n10) {};
+        \end{scope}
+        
+        \draw[signal] (n11) -- (n7);
+        \draw[signal] (n11) |- +(-\d, -\d) -| (n9);
+        
+        \coordinate (n11) at ($(n8) +(0pt, -2*\d-6pt)$); 
+        
+        \draw[signal, -] (n8) -- (n11);
+        \draw[signal, -] (n10) |- +(+\d,-\d) -| (n11);
+
+        \coordinate (S\y) at (n11);
+        
+        \node[anchor=north west] at ($(n10) +(labelcoord)$) {\tiny 1,1,\pgfmathparse{\filters[\y-3]}\pgfmathresult};
+        
+        \node[anchor=north west] at ($(c7) +(labelcoord)$) {\tiny 1,1,\pgfmathparse{int(\filters[\y-3]*4)}\pgfmathresult};
+        \node[anchor=north west] at ($(n8) +(labelcoord)$) {\tiny 3,1,\pgfmathparse{\filters[\y-3]}\pgfmathresult};
+        
+        \node[anchor=north west] at ($(n9) +(labelcoord)$) {\tiny 2,2};
+    }
+    
+    \coordinate (n35) at ($(n11) +(0pt, -54pt-4.5*\vlayerheight-3*\d)$);
+    
+    \coordinate (n15) at ($(n35) +(2.5*\vlayerwidth, -12pt)$);
+    \coordinate (n16) at ($(n15) +(2.5*\vlayerwidth, -12pt)$);
+    \coordinate (n28) at ($(n16) +(2.5*\vlayerwidth, -12pt)$);
+    \coordinate (n29) at ($(n28) +(2.5*\vlayerwidth, -12pt)$);
+    
+    \node[anchor=south] at ($(n15) +(-1.5*\vlayerwidth, -2pt)$) {\tiny 5461x2};
+    \node[anchor=south] at ($(n16) +(-1.0*\vlayerwidth, -2pt)$) {\tiny 5461x5};
+    \node[anchor=south] at ($(n28) +(-0.5*\vlayerwidth, -2pt)$) {\tiny 5461x16};
+    \node[anchor=south] at ($(n29) +(-0.0*\vlayerwidth, -2pt)$) {\tiny 5461x8};
+    
+    \def\mapsize{{64,32,16,8,7,2,1}}
+    \def\filters{{800,512,512,256,256,256,256}}
+    
+    \foreach \y in {1,...,7} {
+        \begin{scope} [start chain=going below, every node/.style={on chain}]
+            \ifthenelse{\y=1}{
+                \node[layer, vlayer] (n12) at ($(n3) +(2*\vlayerwidth, 0pt)$) {};
+            }{
+                \node[layer, vlayer] (n12) at ($(S\y) +(2*\vlayerwidth, -5.5*\vlayerheight-22pt)$) {};
+            }
+        \end{scope}
+        
+        \draw[signal] (S\y) |- +(+\d, -\d) -| (n12);
+        
+        \begin{scope} [start chain=going below, every node/.style={on chain}]
+            \node[bn, vlayer] (n13)
+                at ($(n12) +({(0.5+\y*0.75)*\vlayerwidth}, -8pt-2*\d)$) {};
+            \node[activation, vlayer] {};
+            \node[conv, vlayer] (n37) {};
+            \node[layer, vlayer] (n17) {};
+        \end{scope}
+        
+        \begin{scope} [start chain=going below, every node/.style={on chain}]
+            \node[bn, vlayer] (n14) 
+                at ($(n12) +({(0.5+(8+\y)*0.75)*\vlayerwidth}, -8pt-2*\d)$) {};
+            \node[activation, vlayer] {};
+            \node[conv, vlayer] (n38) {};
+            \node[layer, vlayer] (n18){};
+        \end{scope}
+        
+        \begin{scope} [start chain=going below, every node/.style={on chain}]
+            \node[bn, vlayer] (n24) 
+                at ($(n12) +({(0.5+(16+\y)*0.75)*\vlayerwidth}, -8pt-2*\d)$) {};
+            \node[activation, vlayer] {};
+            \node[conv, vlayer] (n39) {};
+            \node[layer, vlayer] (n26){};
+        \end{scope}
+                
+        \begin{scope} [start chain=going below, every node/.style={on chain}]
+            \node[bn, vlayer] (n25) 
+                at ($(n12) +({(0.5+(24+\y)*0.75)*\vlayerwidth}, -8pt-2*\d)$) {};
+            \node[activation, vlayer] {};
+            \node[conv, vlayer] (n40) {};
+            \node[layer, vlayer] (n27){};
+        \end{scope}
+
+        \draw[signal] (n12) |- +(+\d, -\d) -| (n13);
+        \draw[signal] (n12) |- +(+\d, -\d) -| (n14);
+        
+        \draw[signal] (n12) |- +(+\d, -\d) -| (n24);
+        \draw[signal] (n12) |- +(+\d, -\d) -| (n25);
+        
+        \draw[signal, -] (n17) |- (n15);
+        \draw[signal, -] (n18) |- (n16);
+        
+        \draw[signal, -] (n26) |- (n28);
+        \draw[signal, -] (n27) |- (n29);
+        
+        \node[anchor=north west] at ($(n37) +(labelcoord)$) {\tiny 3,1,2};
+        \node[anchor=north west] at ($(n38) +(labelcoord)$) {\tiny 3,1,5};
+        \node[anchor=north west] at ($(n39) +(labelcoord)$) {\tiny 3,1,16};
+        \node[anchor=north west] at ($(n40) +(labelcoord)$) {\tiny 3,1,8};
+        
+        \node[anchor=north west] at ($(S\y) +(shapecoord)$) {\tiny \pgfmathparse{\mapsize[\y-1]}\pgfmathresult x\pgfmathparse{\mapsize[\y-1]}\pgfmathresult x\pgfmathparse{\filters[\y-1]}\pgfmathresult};
+    }
+    
+    \coordinate (n36) at ($(n35) +(0pt, -40pt-2*\vlayerheight-2*\d)$);
+    
+    \begin{scope} [start chain=going below, every node/.style={on chain}]
+        \node[layer, vlayer] (n19) at ($(n36) +(0pt, 0pt)$) {};
+        \node[softmax, vlayer] (n21) {};
+    \end{scope}
+    
+    \begin{scope} [start chain=going below, every node/.style={on chain}]
+        \node[layer, vlayer] (n20) at ($(n36) +(3*\vlayerwidth, -\vlayerheight)$) {};
+    \end{scope}
+    
+    \begin{scope} [start chain=going below, every node/.style={on chain}]
+        \node[layer, vlayer] (n30) at ($(n36) +(6*\vlayerwidth, 0pt)$) {};
+        \node[softmax, vlayer] (n31) {};
+    \end{scope}
+    
+    \begin{scope} [start chain=going below, every node/.style={on chain}]
+        \node[layer, vlayer] (n32) at ($(n36) +(9*\vlayerwidth, 0pt)$) {};
+        \node[softmax, vlayer] (n33) {};
+    \end{scope}
+    
+    \draw[signal] (n15) -| (n19);
+    \draw[signal] (n16) -| (n20);
+    \draw[signal] (n28) -| (n30);
+    \draw[signal] (n29) -| (n32);
+    
+    \node[point] (n23) at ($(n21) +(0pt, -46pt)$) {Output};
+    
+    \draw[signal] (n21) -- (n23);
+    \draw[signal] (n20) |- +(-\d,-20pt) -| (n23);
+    \draw[signal] (n31) |- +(-\d,-20pt) -| (n23);
+    \draw[signal] (n33) |- +(-\d,-20pt) -| (n23);
+    
+    \node[anchor=north west, text width=5cm, align=left] at ($(n21) +(0pt, -2pt)$) {\tiny segment \\ confidence\par};
+    \node[anchor=north west, text width=5cm, align=left] at ($(n20) +(0pt, -2pt)$) {\tiny segment \\ offsets\par};
+    \node[anchor=north west, text width=5cm, align=left] at ($(n31) +(0pt, -2pt)$) {\tiny within layer link \\ confidence\par};
+    \node[anchor=north west, text width=5cm, align=left] at ($(n33) +(0pt, -2pt)$) {\tiny cross layer link \\ confidence\par};
+    
+    \node[anchor=north west] at ($(n23) +(shapecoord)$) {\tiny 5461x31};
+    
+    % Dense Block
+    
+    \def\blockx{400pt}
+    \def\blocky{-0pt}
+    \def\blockw{90pt}
+    \def\blockh{264pt}
+    
+    \draw[draw=black, fill=black!20!white] (\blockx,\blocky) rectangle (\blockx+\blockw,\blocky-\blockh);
+    \draw[dotted] (d1.north east) -- (\blockx, \blocky);
+    \draw[dotted] (d1.south east) -- (\blockx, \blocky-\blockh);
+    
+    \node[anchor=north west, text width=\blockw, align=center] at (\blockx,\blocky-8pt) {Dense Block\\n=6, k=48\par};
+    
+    \coordinate (n0) at (\blockx+18pt,\blocky-40pt);
+    \coordinate (n1) at ($(n0) +(0pt, -4pt)$);
+    \node[anchor=north west] at ($(n1) +(-2pt, 6pt)$) {\tiny 128x128x128};
+    
+    \foreach \y in {1,...,2} {
+        \begin{scope} [start chain=going below, every node/.style={on chain}]
+            \node[bn, vlayer] (n3) at ($(n1) +(0.8*\vlayerwidth, -20pt)$) {};
+            \node[activation, vlayer] {};
+            \node[conv, vlayer] (n4) {};
+            \node[bn, vlayer] {};
+            \node[activation, vlayer] {};
+            \node[conv, vlayer] (n2) {};
+        \end{scope}
+        
+        \node[anchor=north west] at ($(n4) +(labelcoord)$) {\tiny 1,1,4k};
+        \node[anchor=north west] at ($(n2) +(labelcoord)$) {\tiny 3,1,k};
+        \draw[signal] (n1) |- +(+\d, -\d) -| (n3);
+        \coordinate (n1) at ($(n2) +(-0.8*\vlayerwidth, -16pt)$);
+        \draw[signal, -] (n2) |- +(-\d, -\d) -| (n1);
+        \node[anchor=north west] at ($(n1) +(-2pt, 6pt)$) {\tiny 128x128x(128+\y k)};
+    }
+    
+    \draw[signal, -] (n0) -- ($(n1) +(0pt, -12pt)$);
+    
+    \coordinate (n0) at ($(n1) +(0pt, -40pt)$);
+    
+    \draw[signal, -, loosely dotted] (n1) -- (n0);
+    \coordinate (n1) at ($(n0) +(0pt, -4pt)$);
+    
+        \begin{scope} [start chain=going below, every node/.style={on chain}]
+            \node[bn, vlayer] (n3) at ($(n1) +(0.8*\vlayerwidth, -20pt)$) {};
+            \node[activation, vlayer] {};
+            \node[conv, vlayer] (n4) {};
+            \node[bn, vlayer] {};
+            \node[activation, vlayer] {};
+            \node[conv, vlayer] (n2) {};
+        \end{scope}
+        
+        \node[anchor=north west] at ($(n4) +(labelcoord)$) {\tiny 1,1,4k};
+        \node[anchor=north west] at ($(n2) +(labelcoord)$) {\tiny 3,1,xk};
+        \draw[signal] (n1) |- +(+\d, -\d) -| (n3);
+        \coordinate (n1) at ($(n2) +(-0.8*\vlayerwidth, -16pt)$);
+        \draw[signal, -] (n2) |- +(-\d, -\d) -| (n1);
+        \node[anchor=north west] at ($(n1) +(-2pt, 6pt)$) {\tiny 128x128x(128+nk)};
+    
+    \draw[signal] (n0) -- ($(n1) +(0pt, -12pt)$);
+    
+    % Legend
+    
+    \def\legendx{560pt}
+    \def\legendy{-20pt}
+    \def\legendd{18pt}
+    
+    \coordinate (n1) at (\legendx,\legendy);
+    \node[conv, vlayer, label=east:Convolution] at (n1) {};
+    \node[bn, vlayer, label=east:Batch Normalization] (n1) at ($(n1) +(0pt, -\legendd)$) {};
+    \node[activation, vlayer, label=east:ReLU] (n1) at ($(n1) +(0pt, -\legendd)$) {};
+    \node[pool, vlayer, label=east:Max Pooling] (n1) at ($(n1) +(0pt, -\legendd)$) {};
+    \node[layer, vlayer, label=east:{L2 Normalization, Flatten, Reshape, ...}] (n1) at ($(n1) +(0pt, -\legendd)$) {};
+    \node[softmax, vlayer, label=east:Softmax] (n1) at ($(n1) +(0pt, -\legendd)$) {};
+    
+    \coordinate (n1) at ($(n1) +(0pt, -\legendd)$);
+    \draw[signal] (n1) +(-\vlayerwidth/2, 0pt) -- +(\vlayerwidth/2, 0pt);
+    \node[minimum width=\vlayerwidth, label=east:Vector Transfer] at (n1) {};
+    
+    \coordinate (n1) at ($(n1) +(0pt, -\legendd)$);
+    \draw[signal] (n1) +(-\vlayerwidth/2+4pt,+10pt) |- +(\vlayerwidth/2-4pt, 0pt);
+    \draw[signal] (n1) +(-\vlayerwidth/2+4pt,-10pt) |- +(\vlayerwidth/2-4pt, 0pt);
+    \node[minimum width=\vlayerwidth, label=east:Concatenate] at (n1) {};
+    
+    \coordinate (n1) at ($(n1) +(0pt, -\legendd)$);
+    \draw[signal] (n1) +(-\vlayerwidth/2+4pt,0pt) -| +(\vlayerwidth/2-4pt, +12pt);
+    \draw[signal] (n1) +(-\vlayerwidth/2+4pt,0pt) -| +(\vlayerwidth/2-4pt, -12pt);
+    \node[minimum width=\vlayerwidth, label=east:Copy] at (n1) {};
+    
+\end{tikzpicture}

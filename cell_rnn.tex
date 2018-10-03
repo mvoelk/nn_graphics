@@ -1,0 +1,22 @@
+% RNN
+\begin{tikzpicture}[thick, node distance=30pt and 30pt, on grid]
+    \node[cell, minimum width=200pt, minimum height=110pt, anchor=north west] (b) at (-2pt,0pt) {};
+    
+    \coordinate (hin) at (0pt,-20pt);
+    \draw[signal] (hin) +(-\iolen, 0pt) node[above] {$h_{t-1}$} -- (hin);
+    \coordinate (hout) at (200pt,-20pt);
+    \draw[signal] (hout) -- +(\iolen,0pt) node[above left] {$h_{t}$};
+    \coordinate (h) at (184pt,0pt);
+    \draw[signal] (h) -- +(0,\iolen) node[left] {$h_{t}$};
+    \coordinate (x) at (14pt,-110pt);
+    \draw[signal, -] (x) +(0pt,-\iolen) node[left] {$x_{t}$} -- (x);
+    
+    \node[celllayer] at (b) (a) {$\tanh$};
+    
+    \draw[signal, -] (a) |- (hout);
+    \draw[signal, -] (hout -| h) +(-10pt,0pt) -| (h);
+    \coordinate (hx) at (60pt,-100pt);
+    \draw[signal, -] (x) |- (hx);
+    \draw[signal, -] (hx) -| (a);
+    \draw[signal, -] (hin) +(-10pt,0pt) -| +(50pt,-50pt) |- (hx) +(10pt,0pt);
+\end{tikzpicture}

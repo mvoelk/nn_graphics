@@ -1,0 +1,21 @@
+% Residual Block
+
+\begin{tikzpicture}[start chain=going below, node distance=12pt,
+        point/.append style={on chain, join=by {signal}},
+        layer/.append style={on chain, join=by {signal}},
+        branch/.append style={on chain, join=by {signal, -}},
+    ]
+    \def\branchy{30pt}
+    
+    \node[point] {Input};
+    \node[branch] (input) {};
+    \node[conv, xshift=\layerwidth/2+16pt, yshift=-\branchy] {Conv};
+    \node[bn] {BatchNorm};
+    \node[activation] {ReLU};
+    \node[conv] {Conv};
+    \node[bn] {BatchNorm};
+    \node[layer, xshift=-\layerwidth/2-16pt, yshift=-\branchy] (add) {Addition};
+    \node[activation] {ReLU};
+    \node[point] {Output};
+    \draw[signal] (input) -- (add);
+\end{tikzpicture}

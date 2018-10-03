@@ -1,0 +1,171 @@
+% SSD
+
+\begin{tikzpicture}
+    
+    \def\d{10pt}
+    \def\nd{12pt}
+    
+    \coordinate (shapecoord) at (\layerwidth/2+4pt, -\d+6pt);
+    
+    \tikzstyle{stack}=[start chain=going below, 
+            node distance=\nd, 
+            every node/.style={on chain}, 
+            layer/.append style={join=by {signal}},
+            point/.append style={join=by {signal}},
+        ]
+    
+    \begin{scope} [stack]
+        \node[point] (n0) {Input Image};
+        \node[conv] {Conv 3x3, 64};  % conv_1_2
+        \node[activation] {ReLU};
+        \node[pool] {MaxPool 2x2/2};
+        \node[conv] {Conv 3x3, 64};  % conv_2_1
+        \node[activation] {ReLU};
+        \node[conv] {Conv 3x3, 64};  % conv_2_2
+        \node[activation] {ReLU};
+        \node[pool] {MaxPool 2x2/2};
+        \node[conv] {Conv 3x3, 256}; % conv_3_1
+        \node[activation] {ReLU};
+        \node[conv] {Conv 3x3, 256}; % conv_3_2
+        \node[activation] {ReLU};
+        \node[conv] {Conv 3x3, 256}; % conv_3_3
+        \node[activation] {ReLU};
+        \node[pool] {MaxPool 2x2/2};
+        \node[conv] {Conv 3x3, 512}; % conv_4_1
+        \node[activation] {ReLU};
+        \node[conv] {Conv 3x3, 512}; % conv_4_2
+        \node[activation] {ReLU};
+        \node[conv] {Conv 3x3, 512}; % conv_4_3
+        \node[activation] (s1) {ReLU};
+        \node[pool, yshift=-\d] {MaxPool 2x2/2};
+        \node[conv] {Conv 3x3, 512}; % conv_5_1
+        \node[activation] {ReLU};
+        \node[conv] {Conv 3x3, 512}; % conv_5_2
+        \node[activation] {ReLU};
+        \node[conv] {Conv 3x3, 512}; % conv_5_3
+        \node[activation] {ReLU};
+        \node[pool] {MaxPool 2x2/2};
+        \node[conv] {Conv 3x3, 1024}; % fc6
+        \node[activation] {ReLU};
+        \node[conv] {Conv 1x1, 1024}; % fc7
+        \node[activation] (s2) {ReLU};
+        \node[conv, yshift=-\d] {Conv 1x1, 256}; % conv_6_1
+        \node[activation] {ReLU};
+        \node[conv] {Conv 3x3, 512}; % conv_6_2
+        \node[activation] (s3) {ReLU};
+        \node[conv, yshift=-\d] {Conv 1x1, 128}; % conv_7_1
+        \node[activation] {ReLU};
+        \node[conv] {Conv 3x3, 256}; % conv_7_2
+        \node[activation] (s4) {ReLU};
+        \node[conv, yshift=-\d] {Conv 1x1, 128}; % conv_8_1
+        \node[activation] {ReLU};
+        \node[conv] {Conv 3x3, 256}; % conv_8_2
+        \node[activation] (s5) {ReLU};
+        \node[conv, yshift=-\d] {Conv 1x1, 128}; % conv_9_1
+        \node[activation] {ReLU};
+        \node[conv] {Conv 3x3, 256}; % conv_9_2
+        \node[activation] (s6) {ReLU};
+    \end{scope}
+    
+    \node[anchor=north west] at ($(n0) +(shapecoord)$) {\footnotesize 300x300x3};
+    \def\mapsizes{{"38x38x512", "19x19x1024", "10x10x512", "5x5x256", "3x3x256", "1x1x256"}}
+    \def\priors{{4,6,6,6,4,4}}
+    
+    \coordinate (c3) at ($(s6) +(0pt, -3.5*\layerheight-3*\nd-2*\d)$);
+    
+    \foreach \y in {1,...,6} {
+        
+        \coordinate (c1) at ($(s\y) +(1.5*\layerwidth, -\d-\nd-\layerheight)$);
+        
+        \node[anchor=north west] at ($(s\y) +(shapecoord)$) {\footnotesize \pgfmathparse{\mapsizes[\y-1]}\pgfmathresult};
+        
+        \ifthenelse{\y=1}{
+            \node[layer] (n1) at (c1) {L2 Normalize};
+            \coordinate (c2) at ($(n1) +({(\y-1)*\layerwidth}, {-8*(\layerheight+\nd)})$);
+            \begin{scope} [stack]
+                \node[conv] (n5) at (c2) 
+                    {Conv 3x3, \pgfmathparse{int(\priors[\y-1]*21)}\pgfmathresult};
+                \node[activation] {ReLU};
+                \node[layer] (n2) {Flatten};
+            \end{scope}
+            \draw[signal] (n1) -- (n5);
+            
+            \begin{scope} [stack]
+                \node[conv] (n3) at ($(c2) +(6*\layerwidth, -0pt)$) 
+                    {Conv 3x3, \pgfmathparse{int(\priors[\y-1]*4)}\pgfmathresult};
+                \node[activation] {ReLU};
+                \node[layer] (n4) {Flatten};
+            \end{scope}
+            
+            \draw[signal] (n1.south) |- +(\d, {-7*(\layerheight+\nd)}) -| (n3.north);
+        }{
+            \coordinate (c2) at ($(c1) +({(\y-1)*\layerwidth}, -0pt)$);
+            \begin{scope} [stack]
+                \node[conv] (n1) at (c2) 
+                    {Conv 3x3, \pgfmathparse{int(\priors[\y-1]*21)}\pgfmathresult};
+                \node[activation] {ReLU};
+                \node[layer] (n2) {Flatten};
+            \end{scope}
+            
+            \begin{scope} [stack]
+                \node[conv] (n3) at ($(c2) +(6*\layerwidth, -0pt)$) 
+                    {Conv 3x3, \pgfmathparse{int(\priors[\y-1]*4)}\pgfmathresult};
+                \node[activation] {ReLU};
+                \node[layer] (n4) {Flatten};
+            \end{scope}
+            
+            \draw[signal] (s\y.south) |- +(\d,-\d) -| (n3.north);
+        }
+        
+        \coordinate (c4) at ($(c3) +(0pt, -0.5*\layerheight-\nd-\d)$);
+        
+        \begin{scope} [stack]
+            \node[layer] (n6) at ($(c4) +(0pt, 0pt)$) {Reshape};
+            \node[softmax] (n8) {Softmax};
+        \end{scope}
+        
+        \begin{scope} [stack]
+            \node[layer] (n7) at ($(c4) +(1.5*\layerwidth, -\layerheight-\nd)$) {Reshape};
+        \end{scope}
+        
+        \draw[signal] (s\y.south) |- +(\d,-\d) -| (n1.north);
+        \draw[signal, -] (n2.south) |- ($(c3) +(1*\layerwidth, -0pt)$);
+        \draw[signal, -] (n4.south) |- ($(c3) +(2.5*\layerwidth, -\nd)$);
+        
+    }
+    
+    \draw[signal] ($(c3) +(1*\layerwidth, -0pt)$) -| (n6);
+    \draw[signal] ($(c3) +(2.5*\layerwidth, -\nd)$) -| (n7);
+    
+    \node[point] (n9) at ($(n8) +(0pt, -\layerheight-2*\d-\nd-10pt)$) {Output};
+    \draw[signal] (n8) -- (n9);
+    \draw[signal] (n7.south) |- +(-\d, -\d-10pt) -| (n9);
+    
+    \node[anchor=north west, text width=5cm, align=left] at ($(n8) +(0pt, -0.5*\layerheight)$) {classification\par};
+    \node[anchor=north west, text width=5cm, align=left] at ($(n7) +(0pt, -0.5*\layerheight)$) {bounding box regression\par};
+    
+    % Legend
+    
+    \def\legendx{940pt}
+    \def\legendy{-40pt}
+    \def\legendd{24pt}
+    
+    \def\w{30pt}
+    
+    \coordinate (n1) at (\legendx,\legendy);
+    
+    \coordinate (n1) at ($(n1) +(0pt, -\legendd)$);
+    \draw[signal] (n1) +(-\w/2, 0pt) -- +(\w/2, 0pt);
+    \node[minimum width=\w, label=east:Vector Transfer] at (n1) {};
+    
+    \coordinate (n1) at ($(n1) +(0pt, -\legendd)$);
+    \draw[signal] (n1) +(-\w/2+4pt,+10pt) |- +(\w/2-4pt, 0pt);
+    \draw[signal] (n1) +(-\w/2+4pt,-10pt) |- +(\w/2-4pt, 0pt);
+    \node[minimum width=\w, label=east:Concatenate] at (n1) {};
+    
+    \coordinate (n1) at ($(n1) +(0pt, -\legendd)$);
+    \draw[signal] (n1) +(-\w/2+4pt,0pt) -| +(\w/2-4pt, +12pt);
+    \draw[signal] (n1) +(-\w/2+4pt,0pt) -| +(\w/2-4pt, -12pt);
+    \node[minimum width=\w, label=east:Copy] at (n1) {};
+    
+\end{tikzpicture}

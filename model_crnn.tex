@@ -1,0 +1,29 @@
+% CRNN
+
+\begin{tikzpicture}
+    \begin{scope} [start chain=going below, node distance=12pt,
+        every node/.style={on chain},
+        layer/.append style={join=by {signal}},
+        point/.append style={join=by {signal}},
+        ]
+        \node[point] (input) {Input};
+        \node[conv] {Conv 3x3, 64};
+        \node[pool] {MaxPool 2x2/2};
+        \node[conv] {Conv 3x3, 128};
+        \node[pool] {MaxPool 2x2/2};
+        \node[conv] {Conv 3x3, 256};
+        \node[conv] {Conv 3x3, 256};
+        \node[pool] {MaxPool 1x2/2};
+        \node[conv] {Conv 3x3, 512};
+        \node[bn] {BatchNorm};
+        \node[conv] {Conv 3x3, 512};
+        \node[bn] {BatchNorm};
+        \node[pool] {MaxPool 1x2/2};
+        \node[conv] {Conv 2x2, 512};
+        \node[layer] {Map-to-Sequence};
+        \node[recurrent] {Bidirectional-LSTM};
+        \node[recurrent] {Bidirectional-LSTM};
+        %\node[layer] {Transcription};
+        \node[point] {Output};
+    \end{scope}
+\end{tikzpicture}

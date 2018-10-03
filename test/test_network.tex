@@ -1,0 +1,160 @@
+\documentclass[tikz]{standalone}
+%\documentclass[tikz]{article}
+
+\usepackage{pgfplots}
+\usepackage{ifthen}
+
+\usepackage{amsmath}
+\DeclareMathOperator{\sigm}{sigm}
+\newcommand{\diff}{\mathop{}\!\mathrm{d}}
+
+\begin{document}
+
+\input{../network_init.tex}
+\input{../network_cnn_stide2.tex}
+\input{../network_cnn_receptivefield.tex}
+\input{../model_crnn.tex}
+\input{../model_ssd.tex}
+\input{../model_dsodsl.tex}
+
+
+\tikzset{
+    skip/.style={signal, to path={-- ++(0,-#1) -| (\tikztotarget)}}
+}
+\tikzset{
+    skip/.style={signal, to path={|- ($(\tikztotarget) +(0,#1)$) -- (\tikztotarget)}}
+}
+% join=by {skip=16pt}
+
+
+\begin{tikzpicture}[thick, node distance=30pt, on grid]
+    \begin{scope} [start chain=going below,
+        every node/.style={on chain},
+        layer/.append style={join=by {signal}},
+        point/.append style={join=by {signal}},
+        %every node/.append style={join=by {->,shorten >=-1pt,decoration={post length=4pt}}}
+        ]
+        \node[point] (input) {Input};
+        \node[bn] {BN};
+        \node[activation] {ReLU}; 
+        \node[conv] {weights};
+        \node[bn] {BN};
+        \node[activation] {ReLU}; 
+        \node[conv] {weights};
+        \node[layer] (add) {addition};
+        \node[point] {Output};
+    \end{scope}
+    \draw[signal] (input) -- +(\layerwidth/2+30pt,0) |- (add);
+\end{tikzpicture}
+
+
+
+\def\vblockwidth{30pt}
+\def\vlayerwidth{30pt}
+\def\vlayerheight{2pt}
+
+\tikzstyle{vlayer}=[minimum width=\vlayerwidth, minimum height=\vlayerheight, rotate=90]
+\tikzstyle{vblock}=[minimum width=\vblockwidth, minimum height=\vlayerwidth, node distance=26pt, on chain, join=by {signal}, text width=1cm, align=center]
+
+\begin{tikzpicture}[thick, node distance=2pt, on grid]
+    \begin{scope} [start chain=going right,
+        every node/.style={on chain},
+        %layer/.append style={join=by {signal}},
+        %point/.append style={join=by {signal}}
+        ]
+        \node[point] {Input};
+        \node[conv, vlayer, node distance=26pt, on chain, join=by {signal}] {};
+        \node[bn, vlayer] {};
+        \node[activation, vlayer] {};
+        \node[conv, vlayer] {};
+        \node[bn, vlayer] {};
+        \node[activation, vlayer] {};
+        \node[conv, vlayer] {};
+        \node[bn, vlayer] {};
+        \node[activation, vlayer] {};
+        \node[pool, vlayer] {};
+        
+        \node[layer, vblock] {Dense\\6 48};
+        
+        \node[conv, vlayer, node distance=26pt, on chain, join=by {signal}] {};
+        \node[bn, vlayer] {};
+        \node[activation, vlayer] {};
+        \node[pool, vlayer] {};
+
+        \node[layer, vblock] {Dense\\8 48};
+        
+        \node[conv, vlayer, node distance=26pt, on chain, join=by {signal}] {};
+        \node[bn, vlayer] {};
+        \node[activation, vlayer] (n1) {};
+        
+    \end{scope}
+    
+    \begin{scope} [start chain=going right, every node/.style={on chain}]
+        \node[pool, vlayer] (n2) at ($(n1) +(20pt, 0pt)$) {};
+        
+        \node[layer, vblock, node distance=32pt, on chain, join=by {signal}] {Dense\\8 48};
+        
+        \node[conv, vlayer, node distance=26pt, on chain, join=by {signal}] {};
+        \node[bn, vlayer] {};
+        \node[activation, vlayer] {};
+        
+        \node[layer, vblock] {Dense\\8 48};
+        
+        \node[conv, vlayer, node distance=26pt, on chain, join=by {signal}] (n6) {};
+        \node[bn, vlayer] {};
+        \node[activation, vlayer] (n3) {};
+    \end{scope}
+    
+    \begin{scope} [start chain=going right, every node/.style={on chain}]
+        \node[conv, vlayer] (n4) at ($(n6) +(0pt, 50pt)$) {};
+        \node[bn, vlayer] {};
+        \node[activation, vlayer] (n5) {};
+    \end{scope}
+    
+    
+    \coordinate (n13) at ($(n3) +(12pt, 0pt)$) {};
+    \coordinate (n14) at ($(n13) +(50pt, 0pt)$);
+    \coordinate (n11) at ($(n13) +(-50pt, -0pt)$);
+    \coordinate (n12) at (n13);
+    
+    \draw[signal] (n1) -- (n2);
+    \draw[signal] (n2) -| +(8pt,8pt) |- (n4);
+    \draw[signal, -] (n3) -- (n13);
+    \draw[signal, -] (n5) -| +(8pt,-8pt) |- (n13);
+    \draw[signal, -] (n1) -| +(8pt, 8pt) |- +(16pt, 100pt) -| (n14);
+    
+    \draw[signal, -] (n13) -- (n14);
+    
+    \foreach \y in {1,...,4} {
+        \coordinate (n11) at ($(n11) +(0pt, -100pt)$);
+        \draw[signal, -] (n12) -| +(8pt,-8pt) |- +(-60pt, -30pt) |- (n11);
+        \coordinate (n12) at ($(n11) +(50pt, 0pt)$);
+        
+        \begin{scope} [start chain=going right, every node/.style={on chain}]
+            \node[pool, vlayer] (n7) at ($(n11) +(32pt, +40pt)$) {};
+            \node[bn, vlayer] {};
+            \node[activation, vlayer] {};
+            \node[conv, vlayer] (n8) {};
+        \end{scope}
+        
+        \begin{scope} [start chain=going right, every node/.style={on chain}]
+            \node[bn, vlayer] (n9) at ($(n11) +(32pt-2*\vlayerheight, 0pt)$) {};
+            \node[activation, vlayer] {};
+            \node[conv, vlayer] {};
+            \node[bn, vlayer] {};
+            \node[activation, vlayer] {};
+            \node[conv, vlayer] (n10) {};
+        \end{scope}
+        
+        \draw[signal] (n11) -| +(16pt,+8pt) |- (n7);
+        \draw[signal] (n11) -- (n9);
+        \draw[signal, -] (n8) -| +(8pt,-8pt) |- (n12);
+        \draw[signal, -] (n10) -- (n12);
+        
+        \draw[signal, -] (n12) -| (n14);
+        
+    }
+\end{tikzpicture}
+
+
+\end{document}

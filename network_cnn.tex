@@ -1,0 +1,53 @@
+% CNN
+\begin{tikzpicture}[]
+    \def\nodedist{30pt}
+    \def\layerdist{70pt}
+    
+    \tikzstyle{every pin edge}=[signal]
+    \tikzstyle{annot} = [text width=4em, text centered]
+
+    \foreach \y in {1,...,8}
+        \node[inputnode] 
+            (I\y) at (0,-\y*\nodedist) {$x_\y$};  
+
+    \foreach \y in {1,...,8}
+        \node[hiddennode] 
+            (H1\y) at (\layerdist,-\y*\nodedist) {$z_\y^{1}$};
+            
+    \foreach \y in {1,...,8}
+        \node[hiddennode] 
+            (H2\y) at (2*\layerdist,-\y*\nodedist) {$z_\y^{2}$};
+    
+    \foreach \y in {1,...,6}
+        \node[hiddennode] 
+            (H3\y) at (3*\layerdist,-\y*\nodedist-\nodedist) {$z_\y^{3}$};
+    
+    \foreach \y in {1,...,6}
+        \node[outputnode] 
+            (O\y) at (4*\layerdist,-\y*\nodedist-\nodedist) {$y_\y$};
+
+    \foreach \dest in {1,...,8}
+        \draw[signal, violet] (I\dest) -- (H1\dest);
+    \foreach \dest [count=\source from 1] in {2,...,8}
+        \draw[signal, teal] (I\source) -- (H1\dest);
+    \foreach \dest [count=\source from 2] in {1,...,7}
+        \draw[signal, brown] (I\source) -- (H1\dest);
+
+    \foreach \dest in {1,...,8}
+        \draw[signal, red,] (H1\dest) -- (H2\dest);
+    \foreach \dest [count=\source from 1] in {2,...,8}
+        \draw[signal, green] (H1\source) -- (H2\dest);
+    \foreach \dest [count=\source from 2] in {1,...,7}
+        \draw[signal, blue] (H1\source) -- (H2\dest);
+
+    \foreach \dest in {1,...,6}
+        \draw[signal, cyan] (H2\dest) -- (H3\dest);
+    \foreach \dest [count=\source from 3] in {1,...,6}
+        \draw[signal, orange] (H2\source) -- (H3\dest);
+    \foreach \dest [count=\source from 2] in {1,...,6}
+        \draw[signal, lime] (H2\source) -- (H3\dest);
+
+    \foreach \dest in {1,...,6}
+        \foreach \source in {1,...,6}
+            \draw[signal] (H3\source) -- (O\dest);
+\end{tikzpicture}
