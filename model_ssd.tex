@@ -16,12 +16,14 @@
     
     \begin{scope} [stack]
         \node[point] (n0) {Input Image};
+        \node[conv] {Conv 3x3, 64};  % conv_1_1
+        \node[activation] {ReLU};
         \node[conv] {Conv 3x3, 64};  % conv_1_2
         \node[activation] {ReLU};
         \node[pool] {MaxPool 2x2/2};
-        \node[conv] {Conv 3x3, 64};  % conv_2_1
+        \node[conv] {Conv 3x3, 128}; % conv_2_1
         \node[activation] {ReLU};
-        \node[conv] {Conv 3x3, 64};  % conv_2_2
+        \node[conv] {Conv 3x3, 128}; % conv_2_2
         \node[activation] {ReLU};
         \node[pool] {MaxPool 2x2/2};
         \node[conv] {Conv 3x3, 256}; % conv_3_1
